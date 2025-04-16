@@ -1,5 +1,4 @@
 import Header from "../components/header";
-import Footer from "../components/footer";
 import { WalletConnect } from "@/components/walletConnect";
 export default function Home() {
 
@@ -21,7 +20,6 @@ export default function Home() {
           <WalletConnect />
         </div>
       </div>
-      {/* <Footer /> */}
     </div>
   );
 }

@@ -1,13 +1,8 @@
 "use client"
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import Link from 'next/link';
-import { useAccount, useBalance } from 'wagmi';
-import { useEffect } from 'react';
+import Image from "next/image";
 
 export const NavbarWalletComponent = () => {
-
-    const { address } = useAccount();
-    const { data: balance } = useBalance({ address });
 
     return (
         <ConnectButton.Custom>
@@ -15,7 +10,6 @@ export const NavbarWalletComponent = () => {
                 account,
                 chain,
                 openChainModal,
-                openConnectModal,
                 openAccountModal,
                 authenticationStatus,
                 mounted,
@@ -71,7 +65,7 @@ export const NavbarWalletComponent = () => {
                                                             }}
                                                         >
                                                             {chain.iconUrl && (
-                                                                <img
+                                                                <Image
                                                                     alt={chain.name ?? 'Chain icon'}
                                                                     src={chain.iconUrl}
                                                                     style={{ width: 20, height: 20 }}

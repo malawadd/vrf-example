@@ -23,8 +23,7 @@ export default function RandomNumber() {
         hash,
     });
 
-    const { address, isConnected } = useAccount();
-    const [tokenValue, setTokenValue] = useState<string>('');
+    const {isConnected } = useAccount();
     const [scrambledText, setScrambledText] = useState('');
     const [initialAnimation, setInitialAnimation] = useState(true);
     const [windowWidth, setWindowWidth] = useState<number>(0);
@@ -123,8 +122,6 @@ export default function RandomNumber() {
         };
     }, [isTransactionSuccess, refetchReadData, initialAnimation, readData]);
 
-    const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
     useEffect(() => {
         if (isTransactionSuccess) {
             setInitialAnimation(true);
@@ -177,7 +174,7 @@ export default function RandomNumber() {
                                 {/* Left Side - Text Content */}
                                 <div className="w-full lg:w-1/2 space-y-8 text-wrap mt-24">
                                     <h1 className="font-funnel-display text-3xl md:text-4xl font-bold text-black">
-                                        Here's Your Verifiable Random Number ...
+                                        Here&apos;s Your Verifiable Random Number ...
                                     </h1>
                                     <div className="space-y-4 font-funnel-display">
                                         {numberRows.map((row, index) => (
