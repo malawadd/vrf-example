@@ -3,8 +3,9 @@ import React from 'react';
 import Image from "next/image";
 import { useState, useEffect } from 'react';
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { CONTRACT_ABI, CONTRACT_ADDRESS } from '@/lib/contract'; 
+import { CONTRACT_ABI, CONTRACT_ADDRESS } from '@/lib/contract';
 import Header from './header';
+import Wallet from '../wallet';
 
 export default function RandomNumber() {
 
@@ -23,7 +24,7 @@ export default function RandomNumber() {
         hash,
     });
 
-    const {isConnected } = useAccount();
+    const { isConnected } = useAccount();
     const [scrambledText, setScrambledText] = useState('');
     const [initialAnimation, setInitialAnimation] = useState(true);
     const [windowWidth, setWindowWidth] = useState<number>(0);
@@ -224,7 +225,8 @@ export default function RandomNumber() {
                     </main>
                 </div>
             </> : <>
-                <p>Please connect your wallet to interact with the contract.</p></>}
+                <Wallet />
+            </>}
         </>
     );
 }

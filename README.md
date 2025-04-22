@@ -73,13 +73,6 @@ Located in `app/coinflip/page.tsx`, this demo uses the Randamu JavaScript librar
 ### Environment Variables
 - `NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID`: Your WalletConnect project ID
 
-## 🎨 UI Components
-
-- **WalletConnect**: Custom-styled wallet connection button
-- **Number Display**: Animated display of random numbers
-- **Transaction Buttons**: Styled buttons for initiating transactions
-- **Responsive Layout**: Adapts to different screen sizes
-
 ## 🔗 Links
 
 - [Randamu Solidity Library](https://github.com/randa-mu/randomness-solidity)

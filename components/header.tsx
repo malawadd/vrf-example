@@ -27,9 +27,11 @@ const Header = () => {
             />
           </div>
         </Link>
+
       </div>
     </div >
   );
 };
 
 export default Header;
+

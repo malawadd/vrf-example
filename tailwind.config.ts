@@ -28,6 +28,7 @@ const config: Config = {
         'lg': '1024px',   // Default Tailwind 'lg'
       },
       backgroundImage: {
+        'white-pattern': "url('/assets/background/white.svg')",
         'blue-pattern': "url('/assets/background/blue.jpg')",
         'yellow-pattern': "url('/assets/background/yellow.jpg')",
         'black-pattern': "url('/assets/background/black.jpg')",
