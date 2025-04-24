@@ -1,7 +1,6 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import Header from '@/components/header';
 
 export default function Home() {
   return (
@@ -24,10 +23,10 @@ export default function Home() {
             {/* Main Content */}
             <div className="space-y-4 md:space-y-6 mb-10 md:mb-16">
               <h1 className="font-funnel-display text-3xl md:text-5xl lg:text-7xl font-bold text-black max-w-4xl">
-                Revolutionizing Real-World Consensus via Threshold Cryptography
+                Verifiable Randomness Starter Kit
               </h1>
               <p className="font-funnel-sans text-lg md:text-xl text-gray-500">
-                dcipher: a modular network for threshold signing
+                Get trustless, on-chain RNG in just a few lines of code — powered by Randamu.
               </p>
             </div>
           </div>
@@ -60,17 +59,23 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 md:gap-0">
             <div className="text-center md:text-left">
-              <h2 className="font-funnel-display text-2xl font-bold">Randamu</h2>
+              <Image
+                className="cursor-pointer"
+                src="/assets/logos/lightLogo.svg"
+                width={150}
+                height={150}
+                alt="Randamu Logo"
+              />
               <p className="font-funnel-sans text-gray-400 mt-2">Verifiable Randomness for Web3</p>
             </div>
             <div className="flex space-x-6">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors duration-300">
+              <a href="https://docs.randa.mu/" target="_blank" className="text-gray-400 hover:text-white transition-colors duration-300">
                 Documentation
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors duration-300">
+              <a href="https://github.com/randa-mu" target="_blank" className="text-gray-400 hover:text-white transition-colors duration-300">
                 GitHub
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors duration-300">
+              <a href="https://x.com/RandamuInc/" target="_blank" className="text-gray-400 hover:text-white transition-colors duration-300">
                 Twitter
               </a>
             </div>

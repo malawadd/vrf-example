@@ -1,12 +1,12 @@
 'use client';
 import React, { useState } from 'react';
 import Image from "next/image";
-import Header from './header';
 import { Randomness } from 'randomness-js'
 import { BrowserProvider } from 'ethers'
 import { useWalletClient } from 'wagmi'
 import { getBytes } from "ethers"
 import { useAccount } from 'wagmi';
+import Header from './header';
 import Wallet from '../wallet';
 
 export default function CoinFlip() {
@@ -37,16 +37,9 @@ export default function CoinFlip() {
             }
 
             const randomness = Randomness.createBaseSepolia(signer)
-            if (!randomness) {
-                setError("Failed to create randomness. Please try again.");
-                return
-            }
-            console.log(randomness)
-
             const response = await randomness.requestRandomness()
-            console.log(response)
             const bytes = getBytes(response.randomness)
-            console.log(bytes)
+
             if (bytes.length === 0) {
                 setError("Failed to generate random number. Please try again.");
                 return
