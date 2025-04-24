@@ -11,7 +11,7 @@ export default function Home() {
           <div className="container mx-auto px-4 md:px-16 pt-20 md:pt-32">
             <Image
               className="cursor-pointer"
-              src="/assets/logos/Logo.svg"
+              src="/assets/logos/logo.svg"
               width={150}
               height={150}
               alt="Randamu Logo"
