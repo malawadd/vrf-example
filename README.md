@@ -1,4 +1,4 @@
-# Randamu Demo
+# VRF example
 
 A starter kit demonstrating the integration of Randamu's randomness solutions for blockchain applications. This demo showcases two different approaches to generating verifiable random numbers on-chain:
 
@@ -8,7 +8,7 @@ A starter kit demonstrating the integration of Randamu's randomness solutions fo
 ## 📁 Project Structure
 
 ```
-randamu-vrf-example/
+vrf-example/
 ├── app/                            # Next.js app directory
 │   ├── coinflip/                   # Coin flip demo
 │   │   ├── page.tsx                # Main coin flip page
@@ -34,8 +34,8 @@ randamu-vrf-example/
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/randamu-vrf-example.git
-cd randamu-vrf-example
+git clone https://github.com/randa-mu/vrf-example.git
+cd vrf-example
 ```
 
 2. Install dependencies:
@@ -82,7 +82,7 @@ Located in `app/coinflip/page.tsx`, this demo uses the Randamu JavaScript librar
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please feel free to submit a pull request.
 
 ## 📄 License
 
