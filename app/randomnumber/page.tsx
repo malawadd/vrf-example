@@ -28,6 +28,7 @@ export default function RandomNumber() {
     const [scrambledText, setScrambledText] = useState('');
     const [initialAnimation, setInitialAnimation] = useState(true);
     const [windowWidth, setWindowWidth] = useState<number>(0);
+    const [loading, setLoading] = useState(false);
 
     // Characters for scrambling effect
     const chars = 'g7#A1vX2$tbM39@PwLzqY!eK5RfU6&8cjdNVoZ0xB*hpJr4mETQS^aHiGWDClukO%';
@@ -106,15 +107,19 @@ export default function RandomNumber() {
 
                 setScrambledText(newText);
 
-                if (animationSteps >= maxSteps) {
-                    clearInterval(intervalId);
-                    if (readData) {
-                        setScrambledText(BigInt(readData).toString());
-                    } else {
-                        setScrambledText(currentText);
+                if (!loading) {
+                    if (animationSteps >= maxSteps) {
+                        clearInterval(intervalId);
+                        if (readData) {
+                            setScrambledText(BigInt(readData).toString());
+                        } else {
+                            setScrambledText(currentText);
+                        }
+                        setInitialAnimation(false);
                     }
-                    setInitialAnimation(false);
                 }
+
+
             }, 100);
         }
 
@@ -141,6 +146,8 @@ export default function RandomNumber() {
     const generateRandomNumber = async () => {
         console.log("GENERATING RANDOM NUMBER")
         console.log("BEFORE", readData)
+        setInitialAnimation(true)
+        setLoading(true);
         try {
             writeContract({
                 address: CONTRACT_ADDRESS,
@@ -148,10 +155,10 @@ export default function RandomNumber() {
                 functionName: 'generateRandomNumber',
                 // gas: BigInt(330063038),
             });
-            if (isTransactionSuccess) {
-                refetchReadData();
-                console.log("AFTER", readData)
-            }
+            // if (isTransactionSuccess) {
+            //     refetchReadData();
+            //     console.log("AFTER", readData)
+            // }
         } catch (error) {
             console.error('Transfer failed:', error);
         }
