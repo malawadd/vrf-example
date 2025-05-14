@@ -47,6 +47,7 @@ npm install
 ```env
 NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=your_wallet_connect_project_id
 ```
+You can get a wallet connect project ID by registering for free at https://cloud.reown.com and creating a project.
 
 4. Start the development server:
 ```bash
