@@ -3,7 +3,7 @@ import React from 'react';
 import Image from "next/image";
 import { useState, useEffect } from 'react';
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { CONTRACT_ABI, CONTRACT_ADDRESS } from '@/lib/contract';
+import { CONTRACT_ABI, CONTRACT_ADDRESS } from '@/app/config';
 import Header from './header';
 import Wallet from '../wallet';
 

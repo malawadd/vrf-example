@@ -10,6 +10,7 @@ A starter kit demonstrating the integration of Randamu's randomness solutions fo
 ```
 vrf-example/
 ├── app/                            # Next.js app directory
+│   └── config.ts                   # Chain configuraiton, contract ABI and addresses
 │   ├── coinflip/                   # Coin flip demo
 │   │   ├── page.tsx                # Main coin flip page
 │   │   └── header.tsx              # Header component
@@ -25,7 +26,6 @@ vrf-example/
 │   └── walletConnect.tsx           # Wallet connection component
 ├── lib/                            # Utility and configuration
 │   └── RandomNumberGenerator.sol   # Example smart contract to generate random number
-│   └── contract.ts                 # Contract ABI and addresses
 |
 
 ```
@@ -70,9 +70,18 @@ Located in `app/coinflip/page.tsx`, this demo uses the Randamu JavaScript librar
 - Interactive UI
 - Real-time updates
 
+## Configuration
 
 ### Environment Variables
-- `NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID`: Your WalletConnect project ID
+- `NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID`
+
+Your WalletConnect project ID. You can get a wallet connect project ID by registering for free at https://cloud.reown.com and creating a project.
+
+### Changing the supported chain
+To run on a chain other than the default (Base Sepolia) you must first:
+1. Deploy the [random number generator contract](contracts/RandomNumberGenerator.sol) to your chain of choice
+2. Update the ABI and contract address in the [app config file](./app/config.ts)
+3. Configure the chain parameters in the [app config file](./app/config.ts) to match your desired chain (viem has lots of pre-packaged ones to import!)
 
 ## 🔗 Links
 

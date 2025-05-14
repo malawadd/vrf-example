@@ -1,4 +1,11 @@
-export const CONTRACT_ADDRESS = "0xa8479bD0B628F73d5993da2ed74384dEB30d7FE8"
+import {baseSepolia} from "wagmi/chains"
+import {Chain} from "@rainbow-me/rainbowkit"
+
+// you can add supported or new chains using the relevant viem chain
+// or by using `defineChain` from viem
+export const supportedChains: Array<Chain>= [baseSepolia];
+
+export const CONTRACT_ADDRESS = '0xa8479bD0B628F73d5993da2ed74384dEB30d7FE8';
 
 export const CONTRACT_ABI = [
 	{
@@ -76,4 +83,4 @@ export const CONTRACT_ABI = [
 		"stateMutability": "view",
 		"type": "function"
 	}
-]
+];
