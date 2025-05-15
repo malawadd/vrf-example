@@ -10,7 +10,7 @@ A starter kit demonstrating the integration of Randamu's randomness solutions fo
 ```
 vrf-example/
 ├── app/                            # Next.js app directory
-│   └── config.ts                   # Chain configuraiton, contract ABI and addresses
+│   └── config.ts                   # Chain configuration, contract ABI and addresses
 │   ├── coinflip/                   # Coin flip demo
 │   │   ├── page.tsx                # Main coin flip page
 │   │   └── header.tsx              # Header component
