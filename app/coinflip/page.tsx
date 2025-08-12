@@ -2,12 +2,13 @@
 import React, { useState } from 'react';
 import Image from "next/image";
 import { Randomness } from 'randomness-js'
-import { BrowserProvider } from 'ethers'
-import { useWalletClient } from 'wagmi'
-import { getBytes } from "ethers"
-import { useAccount } from 'wagmi';
+import { BrowserProvider, ethers, getBytes } from 'ethers'
+import { useAccount, useWalletClient } from 'wagmi'
 import Header from './header';
 import Wallet from '../wallet';
+import { useReadContract, useWriteContract, useConfig } from 'wagmi';
+import { CONTRACT_ABI, CONTRACT_ADDRESS } from '@/app/config';
+import { waitForTransactionReceipt } from "@wagmi/core";
 
 export default function CoinFlip() {
 
@@ -16,36 +17,65 @@ export default function CoinFlip() {
     const [error, setError] = useState<string | null>(null);
     const { data: walletClient } = useWalletClient()
 
-    const getSigner = async () => {
-        if (!walletClient) return null
+    // Read function that doesn't need args
+    const { data: readData, refetch: refetchReadData } = useReadContract({
+        address: CONTRACT_ADDRESS,
+        abi: CONTRACT_ABI,
+        functionName: 'randomness',
+    }) as { data: bigint | undefined, refetch: () => void };
 
-        // Create an ethers v6 provider from the walletClient
-        const provider = new BrowserProvider(walletClient.transport)
+    // Write function setup
+    const { writeContract, data: hash, isPending } = useWriteContract();
+    const config = useConfig();
 
-        // Get the signer
-        return await provider.getSigner()
-    }
+    const handleTransactionSubmitted = async (txHash: string) => {
+        const transactionReceipt = await waitForTransactionReceipt(config, {
+            hash: txHash as `0x${string}`,
+        });
 
-
-    const generateRandomNumber = async () => {
-        try {
-            setError(null); // Clear any previous errors
-            const signer = await getSigner()
-            if (!signer) {
-                setError("No wallet connected. Please connect your wallet first.");
-                return
-            }
-
-            const randomness = Randomness.createBaseSepolia(signer)
-            const response = await randomness.requestRandomness()
-            const bytes = getBytes(response.randomness)
-
+        if (transactionReceipt.status === "success") {
+            // execute your logic here
+            const bytes = getBytes(readData?.toString() || '0');
+            console.log(readData, "Read Data")
             if (bytes.length === 0) {
                 setError("Failed to generate random number. Please try again.");
                 return
             }
-            
+            console.log("Randomness bytes:", bytes)
+
             setResult(bytes[0] % 2 === 0 ? 1 : 2)
+
+        }
+    };
+
+    const generateRandomNumber = async () => {
+        try {
+            setResult(0); // Reset result to show loading state
+            setError(null); // Clear any previous errors
+            try {
+                const callbackGasLimit = 700_000;
+                const jsonProvider = new ethers.JsonRpcProvider(`https://base-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`);
+
+                const randomness = Randomness.createBaseSepolia(jsonProvider)
+                console.log("Randomness : ", randomness)
+                const [requestCallBackPrice] = await randomness.calculateRequestPriceNative(BigInt(callbackGasLimit))
+
+                writeContract({
+                    address: CONTRACT_ADDRESS,
+                    abi: CONTRACT_ABI,
+                    functionName: 'generateWithDirectFunding',
+                    args: [callbackGasLimit],
+                    value: requestCallBackPrice,
+                },
+                    {
+                        onSuccess: handleTransactionSubmitted,
+                    });
+
+            } catch (error) {
+                console.error('Transfer failed:', error);
+            }
+
+
         } catch (error) {
             console.error("Error in generateRandomNumber:", error)
             setError("Failed to generate random number. Please try again.");

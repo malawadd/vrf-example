@@ -2,18 +2,20 @@
 import React from 'react';
 import Image from "next/image";
 import { useState, useEffect } from 'react';
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { CONTRACT_ABI, CONTRACT_ADDRESS } from '@/app/config';
 import Header from './header';
 import Wallet from '../wallet';
+import { useAccount } from 'wagmi';
+import { Randomness } from 'randomness-js'
+import { ethers } from 'ethers'
 
 export default function RandomNumber() {
-
     // Read function that doesn't need args
     const { data: readData, refetch: refetchReadData } = useReadContract({
         address: CONTRACT_ADDRESS,
         abi: CONTRACT_ABI,
-        functionName: 'randomNumber',
+        functionName: 'randomness',
     }) as { data: bigint | undefined, refetch: () => void };
 
     // Write function setup
@@ -24,7 +26,7 @@ export default function RandomNumber() {
         hash,
     });
 
-    const { isConnected } = useAccount();
+    const { isConnected, address } = useAccount();
     const [scrambledText, setScrambledText] = useState('');
     const [initialAnimation, setInitialAnimation] = useState(true);
     const [windowWidth, setWindowWidth] = useState<number>(0);
@@ -130,6 +132,7 @@ export default function RandomNumber() {
 
     useEffect(() => {
         if (isTransactionSuccess) {
+            setLoading(false);
             setInitialAnimation(true);
             const timer = setTimeout(async () => {
                 await refetchReadData();
@@ -145,22 +148,27 @@ export default function RandomNumber() {
     // Write function handler with custom gas limit
     const generateRandomNumber = async () => {
         console.log("GENERATING RANDOM NUMBER")
-        console.log("BEFORE", readData)
         setInitialAnimation(true)
         setLoading(true);
+
         try {
+            const callbackGasLimit = 700_000;
+            const jsonProvider = new ethers.JsonRpcProvider(`https://base-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`);
+
+            const randomness = Randomness.createBaseSepolia(jsonProvider)
+            console.log("Randomness : ", randomness)
+            const [requestCallBackPrice] = await randomness.calculateRequestPriceNative(BigInt(callbackGasLimit))
+  
             writeContract({
                 address: CONTRACT_ADDRESS,
                 abi: CONTRACT_ABI,
-                functionName: 'generateRandomNumber',
-                // gas: BigInt(330063038),
+                functionName: 'generateWithDirectFunding',
+                args: [callbackGasLimit],
+                value: requestCallBackPrice, 
             });
-            // if (isTransactionSuccess) {
-            //     refetchReadData();
-            //     console.log("AFTER", readData)
-            // }
         } catch (error) {
             console.error('Transfer failed:', error);
+            setLoading(false);
         }
     };
 
@@ -191,12 +199,6 @@ export default function RandomNumber() {
                                             </h1>
                                         ))}
                                     </div>
-                                    {/* <p className="font-funnel-display text-lg text-gray-600 font-funnel">
-                                        Generate publicly verifiable random numbers with ease using our high performance,
-                                        blockchain aligned infrastructure. Unlike traditional solutions, our permissioned consortium
-                                        of node operators delivers secure, tamperproof randomness, optimized for
-                                        decentralized applications and on-chain integrations.
-                                    </p> */}
 
                                     <div>
                                         <button
