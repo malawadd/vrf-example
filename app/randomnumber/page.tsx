@@ -26,7 +26,7 @@ export default function RandomNumber() {
         hash,
     });
 
-    const { isConnected, address } = useAccount();
+    const { isConnected } = useAccount();
     const [scrambledText, setScrambledText] = useState('');
     const [initialAnimation, setInitialAnimation] = useState(true);
     const [windowWidth, setWindowWidth] = useState<number>(0);

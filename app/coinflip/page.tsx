@@ -2,30 +2,28 @@
 import React, { useState } from 'react';
 import Image from "next/image";
 import { Randomness } from 'randomness-js'
-import { BrowserProvider, ethers, getBytes } from 'ethers'
-import { useAccount, useWalletClient } from 'wagmi'
-import Header from './header';
-import Wallet from '../wallet';
-import { useReadContract, useWriteContract, useConfig } from 'wagmi';
+import { ethers, getBytes } from 'ethers'
+import { useAccount, useReadContract, useWriteContract, useConfig } from 'wagmi';
 import { CONTRACT_ABI, CONTRACT_ADDRESS } from '@/app/config';
 import { waitForTransactionReceipt } from "@wagmi/core";
+import Header from './header';
+import Wallet from '../wallet';
 
 export default function CoinFlip() {
 
     const { isConnected } = useAccount();
     const [result, setResult] = useState(0);
     const [error, setError] = useState<string | null>(null);
-    const { data: walletClient } = useWalletClient()
 
     // Read function that doesn't need args
-    const { data: readData, refetch: refetchReadData } = useReadContract({
+    const { data: readData } = useReadContract({
         address: CONTRACT_ADDRESS,
         abi: CONTRACT_ABI,
         functionName: 'randomness',
-    }) as { data: bigint | undefined, refetch: () => void };
+    }) as { data: bigint | undefined };
 
     // Write function setup
-    const { writeContract, data: hash, isPending } = useWriteContract();
+    const { writeContract } = useWriteContract();
     const config = useConfig();
 
     const handleTransactionSubmitted = async (txHash: string) => {
