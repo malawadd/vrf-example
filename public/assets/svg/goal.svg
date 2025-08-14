@@ -1,0 +1,25 @@
+<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Goal frame -->
+  <rect x="50" y="50" width="300" height="150" fill="none" stroke="#ffffff" stroke-width="4"/>
+  
+  <!-- Goal posts -->
+  <rect x="46" y="46" width="8" height="158" fill="#ffffff"/>
+  <rect x="346" y="46" width="8" height="158" fill="#ffffff"/>
+  
+  <!-- Crossbar -->
+  <rect x="46" y="46" width="308" height="8" fill="#ffffff"/>
+  
+  <!-- Net pattern -->
+  <defs>
+    <pattern id="netPattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 0 0 L 20 20 M 20 0 L 0 20" stroke="#cccccc" stroke-width="1" opacity="0.6"/>
+    </pattern>
+  </defs>
+  
+  <!-- Net background -->
+  <rect x="54" y="54" width="292" height="142" fill="url(#netPattern)" opacity="0.3"/>
+  
+  <!-- Goal area lines -->
+  <rect x="20" y="120" width="360" height="80" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.8"/>
+  <rect x="35" y="140" width="330" height="60" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.6"/>
+</svg>

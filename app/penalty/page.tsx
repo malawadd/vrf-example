@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Randomness } from 'randomness-js'
 import { ethers, getBytes } from 'ethers'
 import { useAccount, useReadContract, useWriteContract, useConfig } from 'wagmi';
@@ -9,15 +9,16 @@ import Header from './header';
 import Wallet from '../wallet';
 
 type Position = 'left' | 'center' | 'right';
-type GameOutcome = 'pending' | 'goal' | 'save';
+type GameState = 'setup' | 'shooting' | 'result';
 
 export default function PenaltyGame() {
     const { isConnected } = useAccount();
-    const [keeperChoice, setKeeperChoice] = useState<Position | null>(null);
+    const [keeperChoice, setKeeperChoice] = useState<Position>('center');
     const [shotResult, setShotResult] = useState<Position | null>(null);
-    const [gameOutcome, setGameOutcome] = useState<GameOutcome>('pending');
-    const [isLoading, setIsLoading] = useState(false);
+    const [gameState, setGameState] = useState<GameState>('setup');
+    const [isGoal, setIsGoal] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [animationPhase, setAnimationPhase] = useState<'idle' | 'shooting' | 'result'>('idle');
 
     // Read function that doesn't need args
     const { data: readData } = useReadContract({
@@ -41,7 +42,8 @@ export default function PenaltyGame() {
             
             if (bytes.length === 0) {
                 setError("Failed to generate random number. Please try again.");
-                setIsLoading(false);
+                setGameState('setup');
+                setAnimationPhase('idle');
                 return;
             }
 
@@ -49,28 +51,26 @@ export default function PenaltyGame() {
             const shotPosition: Position = ['left', 'center', 'right'][bytes[0] % 3] as Position;
             setShotResult(shotPosition);
 
+            // Start result animation
+            setAnimationPhase('result');
+            
             // Determine game outcome
-            if (keeperChoice === shotPosition) {
-                setGameOutcome('save');
-            } else {
-                setGameOutcome('goal');
-            }
-
-            setIsLoading(false);
+            const goalScored = keeperChoice !== shotPosition;
+            setIsGoal(goalScored);
+            
+            // Show result after animation
+            setTimeout(() => {
+                setGameState('result');
+            }, 2000);
         }
     };
 
     const shootPenalty = async () => {
-        if (!keeperChoice) {
-            setError("Please select a position for the goalkeeper first!");
-            return;
-        }
-
         try {
-            setIsLoading(true);
+            setGameState('shooting');
+            setAnimationPhase('shooting');
             setError(null);
             setShotResult(null);
-            setGameOutcome('pending');
 
             const callbackGasLimit = 700_000;
             const jsonProvider = new ethers.JsonRpcProvider(`https://base-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`);
@@ -91,24 +91,46 @@ export default function PenaltyGame() {
         } catch (error) {
             console.error('Penalty shot failed:', error);
             setError("Failed to take penalty shot. Please try again.");
-            setIsLoading(false);
+            setGameState('setup');
+            setAnimationPhase('idle');
         }
     };
 
     const resetGame = () => {
-        setKeeperChoice(null);
+        setKeeperChoice('center');
         setShotResult(null);
-        setGameOutcome('pending');
+        setGameState('setup');
+        setIsGoal(false);
         setError(null);
-        setIsLoading(false);
+        setAnimationPhase('idle');
     };
 
-    const getPositionEmoji = (position: Position) => {
-        switch (position) {
-            case 'left': return '⬅️';
-            case 'center': return '⬆️';
-            case 'right': return '➡️';
+    const getKeeperTransform = () => {
+        if (animationPhase === 'result' && shotResult) {
+            switch (shotResult) {
+                case 'left': return 'translateX(-60px) rotate(-15deg)';
+                case 'right': return 'translateX(60px) rotate(15deg)';
+                case 'center': return 'translateY(-10px)';
+                default: return 'translateX(0)';
+            }
         }
+        return 'translateX(0)';
+    };
+
+    const getBallTransform = () => {
+        if (animationPhase === 'shooting') {
+            return 'translateY(-100px) scale(0.8)';
+        }
+        if (animationPhase === 'result' && shotResult) {
+            const yPos = isGoal ? -120 : -80;
+            switch (shotResult) {
+                case 'left': return `translateX(-80px) translateY(${yPos}px) scale(0.7)`;
+                case 'right': return `translateX(80px) translateY(${yPos}px) scale(0.7)`;
+                case 'center': return `translateX(0px) translateY(${yPos}px) scale(0.7)`;
+                default: return 'translateX(0)';
+            }
+        }
+        return 'translateX(0)';
     };
 
     return (
@@ -136,115 +158,172 @@ export default function PenaltyGame() {
                                         </p>
 
                                         {/* Goalkeeper Position Selection */}
-                                        <div className="space-y-4">
-                                            <h3 className="font-funnel-display text-xl text-white font-semibold">
-                                                Choose Goalkeeper Position:
-                                            </h3>
-                                            <div className="flex gap-4 flex-wrap">
-                                                {(['left', 'center', 'right'] as Position[]).map((position) => (
-                                                    <button
-                                                        key={position}
-                                                        onClick={() => setKeeperChoice(position)}
-                                                        disabled={isLoading}
-                                                        className={`px-6 py-3 rounded-lg font-funnel-display text-lg font-medium transition-all duration-300 ${
-                                                            keeperChoice === position
-                                                                ? 'bg-red-500 text-white shadow-lg scale-105'
-                                                                : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white'
-                                                        } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                                                    >
-                                                        {getPositionEmoji(position)} {position.charAt(0).toUpperCase() + position.slice(1)}
-                                                    </button>
-                                                ))}
+                                        {gameState === 'setup' && (
+                                            <div className="space-y-4">
+                                                <h3 className="font-funnel-display text-xl text-white font-semibold">
+                                                    Choose Goalkeeper Position:
+                                                </h3>
+                                                <div className="flex gap-4 flex-wrap">
+                                                    {(['left', 'center', 'right'] as Position[]).map((position) => (
+                                                        <button
+                                                            key={position}
+                                                            onClick={() => setKeeperChoice(position)}
+                                                            className={`px-6 py-3 rounded-lg font-funnel-display text-lg font-medium transition-all duration-300 ${
+                                                                keeperChoice === position
+                                                                    ? 'bg-red-500 text-white shadow-lg scale-105'
+                                                                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white'
+                                                            } cursor-pointer`}
+                                                        >
+                                                            {position.charAt(0).toUpperCase() + position.slice(1)}
+                                                        </button>
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
 
                                         {/* Action Buttons */}
                                         <div className="flex gap-4 flex-wrap">
-                                            <button
-                                                onClick={shootPenalty}
-                                                disabled={!keeperChoice || isLoading}
-                                                className={`font-funnel-display flex items-center gap-2 px-6 py-3 rounded-lg text-lg font-medium transition-all duration-300 ${
-                                                    !keeperChoice || isLoading
-                                                        ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                                                        : 'bg-red-500 text-white hover:bg-red-600 hover:scale-105'
-                                                }`}
-                                            >
-                                                ⚽ {isLoading ? 'Shooting...' : 'Take Penalty!'}
-                                            </button>
+                                            {gameState === 'setup' && (
+                                                <button
+                                                    onClick={shootPenalty}
+                                                    className="font-funnel-display flex items-center gap-2 px-6 py-3 rounded-lg text-lg font-medium bg-red-500 text-white hover:bg-red-600 hover:scale-105 transition-all duration-300"
+                                                >
+                                                    ⚽ Take Penalty!
+                                                </button>
+                                            )}
                                             
-                                            <button
-                                                onClick={resetGame}
-                                                className="font-funnel-display px-6 py-3 rounded-lg text-lg font-medium bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white transition-all duration-300"
-                                            >
-                                                🔄 Reset Game
-                                            </button>
+                                            {gameState === 'shooting' && (
+                                                <div className="font-funnel-display px-6 py-3 rounded-lg text-lg font-medium bg-yellow-500 text-black">
+                                                    🎯 Shooting...
+                                                </div>
+                                            )}
+
+                                            {gameState === 'result' && (
+                                                <button
+                                                    onClick={resetGame}
+                                                    className="font-funnel-display px-6 py-3 rounded-lg text-lg font-medium bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white transition-all duration-300"
+                                                >
+                                                    🔄 Play Again
+                                                </button>
+                                            )}
                                         </div>
 
-                                        {/* Game Status */}
-                                        {keeperChoice && (
-                                            <div className="bg-gray-800 p-4 rounded-lg">
-                                                <p className="font-funnel-display text-white">
-                                                    <strong>Goalkeeper Position:</strong> {getPositionEmoji(keeperChoice)} {keeperChoice.charAt(0).toUpperCase() + keeperChoice.slice(1)}
-                                                </p>
+                                        {/* Game Result */}
+                                        {gameState === 'result' && (
+                                            <div className="bg-gray-800 p-6 rounded-lg">
+                                                <div className="text-center">
+                                                    {isGoal ? (
+                                                        <div>
+                                                            <div className="text-4xl mb-2">⚽</div>
+                                                            <h3 className="font-funnel-display text-2xl text-red-400 font-bold mb-2">
+                                                                GOAL!
+                                                            </h3>
+                                                            <p className="font-funnel-display text-gray-300">
+                                                                Shot went {shotResult}, keeper dove {keeperChoice}
+                                                            </p>
+                                                        </div>
+                                                    ) : (
+                                                        <div>
+                                                            <div className="text-4xl mb-2">🧤</div>
+                                                            <h3 className="font-funnel-display text-2xl text-green-400 font-bold mb-2">
+                                                                SAVE!
+                                                            </h3>
+                                                            <p className="font-funnel-display text-gray-300">
+                                                                Great positioning! Both went {shotResult}
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         )}
+
+                                        {/* Game Status */}
+                                        <div className="bg-gray-900 p-4 rounded-lg">
+                                            <p className="font-funnel-display text-white">
+                                                <strong>Goalkeeper Position:</strong> {keeperChoice.charAt(0).toUpperCase() + keeperChoice.slice(1)}
+                                            </p>
+                                            {shotResult && (
+                                                <p className="font-funnel-display text-white">
+                                                    <strong>Shot Direction:</strong> {shotResult.charAt(0).toUpperCase() + shotResult.slice(1)}
+                                                </p>
+                                            )}
+                                        </div>
                                     </div>
 
-                                    {/* Right Side - Game Visualization */}
-                                    <div className="w-full lg:w-1/2 flex flex-col items-center space-y-8">
-                                        {/* Game Result Display */}
-                                        <div className="bg-gray-800 p-8 rounded-lg text-center min-h-[300px] flex flex-col justify-center items-center w-full max-w-md">
-                                            {gameOutcome === 'pending' && !isLoading && (
-                                                <div className="text-center">
-                                                    <div className="text-6xl mb-4">🥅</div>
-                                                    <p className="font-funnel-display text-xl text-gray-300">
-                                                        Ready for penalty!
-                                                    </p>
-                                                </div>
-                                            )}
+                                    {/* Right Side - Game Field */}
+                                    <div className="w-full lg:w-1/2 flex flex-col items-center">
+                                        <div className="relative w-full max-w-md aspect-[4/5] bg-gradient-to-b from-green-400 to-green-600 rounded-lg overflow-hidden shadow-2xl">
+                                            {/* Field lines */}
+                                            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-32 h-16 border-2 border-white rounded-t-full opacity-60"></div>
+                                            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 h-8 border-2 border-white rounded-t-full opacity-40"></div>
                                             
-                                            {isLoading && (
-                                                <div className="text-center">
-                                                    <div className="text-6xl mb-4 animate-bounce">⚽</div>
-                                                    <p className="font-funnel-display text-xl text-white animate-pulse">
-                                                        Generating random shot...
-                                                    </p>
-                                                </div>
-                                            )}
-                                            
-                                            {gameOutcome === 'goal' && shotResult && (
-                                                <div className="text-center">
-                                                    <div className="text-6xl mb-4">🎯</div>
-                                                    <p className="font-funnel-display text-2xl text-red-400 font-bold mb-2">
-                                                        GOAL! ⚽
-                                                    </p>
-                                                    <p className="font-funnel-display text-lg text-gray-300">
-                                                        Shot went {getPositionEmoji(shotResult)} {shotResult}
-                                                    </p>
-                                                    <p className="font-funnel-display text-lg text-gray-300">
-                                                        Keeper dove {getPositionEmoji(keeperChoice!)} {keeperChoice}
-                                                    </p>
-                                                </div>
-                                            )}
-                                            
-                                            {gameOutcome === 'save' && shotResult && (
-                                                <div className="text-center">
-                                                    <div className="text-6xl mb-4">🧤</div>
-                                                    <p className="font-funnel-display text-2xl text-green-400 font-bold mb-2">
-                                                        SAVE! 🛡️
-                                                    </p>
-                                                    <p className="font-funnel-display text-lg text-gray-300">
-                                                        Shot went {getPositionEmoji(shotResult)} {shotResult}
-                                                    </p>
-                                                    <p className="font-funnel-display text-lg text-gray-300">
-                                                        Keeper dove {getPositionEmoji(keeperChoice!)} {keeperChoice}
-                                                    </p>
-                                                </div>
-                                            )}
+                                            {/* Goal */}
+                                            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-48 h-24">
+                                                <svg viewBox="0 0 400 200" className="w-full h-full">
+                                                    <rect x="50" y="50" width="300" height="150" fill="none" stroke="#ffffff" strokeWidth="4"/>
+                                                    <rect x="46" y="46" width="8" height="158" fill="#ffffff"/>
+                                                    <rect x="346" y="46" width="8" height="158" fill="#ffffff"/>
+                                                    <rect x="46" y="46" width="308" height="8" fill="#ffffff"/>
+                                                    <defs>
+                                                        <pattern id="netPattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                                                            <path d="M 0 0 L 20 20 M 20 0 L 0 20" stroke="#cccccc" strokeWidth="1" opacity="0.6"/>
+                                                        </pattern>
+                                                    </defs>
+                                                    <rect x="54" y="54" width="292" height="142" fill="url(#netPattern)" opacity="0.3"/>
+                                                </svg>
+                                            </div>
+
+                                            {/* Goalkeeper */}
+                                            <div 
+                                                className="absolute top-28 left-1/2 transform -translate-x-1/2 w-16 h-20 transition-all duration-1000 ease-out"
+                                                style={{ transform: `translateX(-50%) ${getKeeperTransform()}` }}
+                                            >
+                                                <svg viewBox="0 0 100 120" className="w-full h-full">
+                                                    <g>
+                                                        <circle cx="50" cy="25" r="12" fill="#ffdbac"/>
+                                                        <path d="M 38 20 Q 50 10 62 20 Q 60 15 50 15 Q 40 15 38 20" fill="#8B4513"/>
+                                                        <circle cx="46" cy="23" r="2" fill="#000"/>
+                                                        <circle cx="54" cy="23" r="2" fill="#000"/>
+                                                        <path d="M 47 28 Q 50 30 53 28" stroke="#000" strokeWidth="1" fill="none"/>
+                                                        <rect x="40" y="37" width="20" height="35" rx="3" fill="#4CAF50"/>
+                                                        <ellipse cx="32" cy="50" rx="6" ry="15" fill="#4CAF50" transform="rotate(-20 32 50)"/>
+                                                        <ellipse cx="68" cy="50" rx="6" ry="15" fill="#4CAF50" transform="rotate(20 68 50)"/>
+                                                        <circle cx="28" cy="58" r="6" fill="#FFD700" opacity="0.8"/>
+                                                        <circle cx="72" cy="58" r="6" fill="#FFD700" opacity="0.8"/>
+                                                        <rect x="43" y="72" width="6" height="25" fill="#333"/>
+                                                        <rect x="51" y="72" width="6" height="25" fill="#333"/>
+                                                        <ellipse cx="46" cy="102" rx="8" ry="4" fill="#000"/>
+                                                        <ellipse cx="54" cy="102" rx="8" ry="4" fill="#000"/>
+                                                        <text x="50" y="55" textAnchor="middle" fontFamily="Arial" fontSize="8" fontWeight="bold" fill="#fff">1</text>
+                                                    </g>
+                                                </svg>
+                                            </div>
+
+                                            {/* Soccer Ball */}
+                                            <div 
+                                                className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-12 h-12 transition-all duration-1000 ease-out"
+                                                style={{ transform: `translateX(-50%) ${getBallTransform()}` }}
+                                            >
+                                                <svg viewBox="0 0 100 100" className="w-full h-full">
+                                                    <circle cx="50" cy="50" r="45" fill="#ffffff" stroke="#000" strokeWidth="2"/>
+                                                    <g fill="#000000">
+                                                        <polygon points="50,25 62,35 58,50 42,50 38,35" />
+                                                        <polygon points="35,20 50,25 38,35 25,30 30,15" opacity="0.8"/>
+                                                        <polygon points="65,20 75,30 70,45 62,35 50,25" opacity="0.8"/>
+                                                        <polygon points="20,45 25,30 38,35 42,50 30,55" opacity="0.6"/>
+                                                        <polygon points="80,45 70,55 58,50 62,35 75,30" opacity="0.6"/>
+                                                        <polygon points="35,80 30,65 42,50 58,50 55,75" opacity="0.4"/>
+                                                    </g>
+                                                    <ellipse cx="40" cy="35" rx="8" ry="6" fill="#ffffff" opacity="0.3"/>
+                                                </svg>
+                                            </div>
+
+                                            {/* Penalty spot */}
+                                            <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-white rounded-full"></div>
                                         </div>
 
                                         {/* Game Instructions */}
-                                        <div className="bg-gray-900 p-6 rounded-lg max-w-md">
+                                        <div className="bg-gray-900 p-6 rounded-lg max-w-md mt-6">
                                             <h4 className="font-funnel-display text-lg font-semibold text-white mb-3">
                                                 How it works:
                                             </h4>
@@ -252,7 +331,7 @@ export default function PenaltyGame() {
                                                 <li>• Choose where the goalkeeper should dive</li>
                                                 <li>• Click "Take Penalty!" to generate a random shot</li>
                                                 <li>• The blockchain provides verifiable randomness</li>
-                                                <li>• If positions match, it's a save. Otherwise, it's a goal!</li>
+                                                <li>• Watch the animated penalty unfold!</li>
                                             </ul>
                                         </div>
                                     </div>

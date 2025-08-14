@@ -1,0 +1,24 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Ball base -->
+  <circle cx="50" cy="50" r="45" fill="#ffffff" stroke="#000" stroke-width="2"/>
+  
+  <!-- Pentagon pattern -->
+  <g fill="#000000">
+    <!-- Center pentagon -->
+    <polygon points="50,25 62,35 58,50 42,50 38,35" />
+    
+    <!-- Top pentagons -->
+    <polygon points="35,20 50,25 38,35 25,30 30,15" opacity="0.8"/>
+    <polygon points="65,20 75,30 70,45 62,35 50,25" opacity="0.8"/>
+    
+    <!-- Side pentagons -->
+    <polygon points="20,45 25,30 38,35 42,50 30,55" opacity="0.6"/>
+    <polygon points="80,45 70,55 58,50 62,35 75,30" opacity="0.6"/>
+    
+    <!-- Bottom pentagons -->
+    <polygon points="35,80 30,65 42,50 58,50 55,75" opacity="0.4"/>
+  </g>
+  
+  <!-- Highlight for 3D effect -->
+  <ellipse cx="40" cy="35" rx="8" ry="6" fill="#ffffff" opacity="0.3"/>
+</svg>
