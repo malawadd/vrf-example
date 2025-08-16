@@ -184,14 +184,14 @@ export default function PenaltyGame() {
                         {/* Instructions Toggle */}
                         <button
                             onClick={() => setShowInstructions(!showInstructions)}
-                            className="absolute top-24 right-4 z-20 bg-white bg-opacity-90 text-black px-4 py-2 rounded-lg font-funnel-display text-sm hover:bg-opacity-100 transition-all"
+                            className="absolute bottom-4 right-4 z-20 bg-white bg-opacity-90 text-black px-4 py-2 rounded-lg font-funnel-display text-sm hover:bg-opacity-100 transition-all"
                         >
                             {showInstructions ? 'Hide' : 'How to Play'}
                         </button>
 
                         {/* Instructions Panel */}
                         {showInstructions && (
-                            <div className="absolute top-40 right-4 z-20 bg-white bg-opacity-95 p-6 rounded-lg shadow-lg max-w-sm">
+                            <div className="absolute bottom-20 right-4 z-20 bg-white bg-opacity-95 p-6 rounded-lg shadow-lg max-w-sm">
                                 <h3 className="font-funnel-display text-lg font-bold text-black mb-3">How to Play:</h3>
                                 <ul className="font-funnel-display text-sm text-gray-800 space-y-2">
                                     <li>• Choose where the goalkeeper should dive</li>
