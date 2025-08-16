@@ -23,10 +23,10 @@ export default function Home() {
             {/* Main Content */}
             <div className="space-y-4 md:space-y-6 mb-10 md:mb-16">
               <h1 className="font-funnel-display text-3xl md:text-5xl lg:text-7xl font-bold text-black max-w-4xl">
-                Verifiable Randomness Starter Kit
+                Soccer Penalty Shootout
               </h1>
               <p className="font-funnel-sans text-lg md:text-xl text-gray-500">
-                Get trustless, on-chain RNG in just a few lines of code — powered by Randamu.
+                Experience verifiable randomness through an interactive penalty game — powered by Randamu's Threshold Cryptography.
               </p>
             </div>
           </div>
@@ -36,22 +36,12 @@ export default function Home() {
         <div className="container mx-auto px-4 md:px-16">
           <div className="flex flex-col md:flex-row items-center justify-between border-t border-gray-200 pt-6 md:pt-8 gap-4 md:gap-0">
             <div className="flex items-center gap-2">
-              <span className="font-funnel-sans text-gray-900">Try out the Demos</span>
+              <span className="font-funnel-sans text-gray-900">Ready to Play?</span>
             </div>
-            <div className="flex flex-col md:flex-row gap-2 md:gap-0 w-full md:w-auto">
-              <Link href="/randomnumber" className="w-full md:w-[200px]">
-                <div className="w-full md:w-[200px] py-3 font-funnel-sans text-gray-900 border border-gray-200 hover:border-gray-400 transition-colors text-center">
-                  Verifiable RNG
-                </div>
-              </Link>
-              <Link href="/coinflip" className="w-full md:w-[200px]">
-                <div className="w-full md:w-[200px] py-3 font-funnel-sans text-gray-900 border border-gray-200 hover:border-gray-400 transition-colors text-center">
-                  Coin Flip
-                </div>
-              </Link>
+            <div className="w-full md:w-auto">
               <Link href="/penalty" className="w-full md:w-[200px]">
-                <div className="w-full md:w-[200px] py-3 font-funnel-sans text-gray-900 border border-gray-200 hover:border-gray-400 transition-colors text-center">
-                  Penalty Game
+                <div className="w-full md:w-[300px] py-4 font-funnel-sans text-white bg-red-500 hover:bg-red-600 transition-colors text-center text-lg font-semibold rounded-lg shadow-lg">
+                  ⚽ Start Penalty Shootout
                 </div>
               </Link>
             </div>
@@ -87,7 +77,7 @@ export default function Home() {
           </div>
           <div className="mt-6 md:mt-8 pt-6 md:pt-8 border-t border-gray-800 text-center">
             <p className="font-funnel-sans text-gray-400">
-              Built with ❤️ by FIL-B
+              Task #2 - Threshold Cryptography Bootcamp by Randamu
             </p>
           </div>
         </div>
