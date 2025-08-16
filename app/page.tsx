@@ -26,7 +26,7 @@ export default function Home() {
                 Soccer Penalty Shootout
               </h1>
               <p className="font-funnel-sans text-lg md:text-xl text-gray-500">
-                Experience verifiable randomness through an interactive penalty game — powered by Randamu's Threshold Cryptography.
+                Experience verifiable randomness through an interactive penalty game — powered by RandamusThreshold Cryptography.
               </p>
             </div>
           </div>

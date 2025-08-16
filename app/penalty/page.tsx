@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Randomness } from 'randomness-js'
 import { ethers, getBytes } from 'ethers'
 import { useAccount, useReadContract, useWriteContract, useConfig } from 'wagmi';
