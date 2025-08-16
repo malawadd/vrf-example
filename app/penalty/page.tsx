@@ -109,8 +109,9 @@ export default function PenaltyGame() {
     };
 
     const getKeeperTransform = () => {
-        if (animationPhase === 'result' && shotResult) {
-            switch (shotResult) {
+        // Goalkeeper moves to their chosen position during shooting phase
+        if (animationPhase === 'shooting' || animationPhase === 'result') {
+            switch (keeperChoice) {
                 case 'left': return 'translateX(-60px) rotate(-15deg)';
                 case 'right': return 'translateX(60px) rotate(15deg)';
                 case 'center': return 'translateY(-10px)';
@@ -122,10 +123,12 @@ export default function PenaltyGame() {
 
     const getBallTransform = () => {
         if (animationPhase === 'shooting') {
-            return 'translateY(-100px) scale(0.8)';
+            // Ball moves up initially when shot is taken
+            return 'translateY(-80px) scale(0.9)';
         }
         if (animationPhase === 'result' && shotResult) {
-            const yPos = isGoal ? -120 : -80;
+            // Ball moves to final position based on shot direction
+            const yPos = isGoal ? -100 : -60; // Goal or save position
             switch (shotResult) {
                 case 'left': return `translateX(-80px) translateY(${yPos}px) scale(0.7)`;
                 case 'right': return `translateX(80px) translateY(${yPos}px) scale(0.7)`;
