@@ -1,9 +1,21 @@
-# VRF example
+# Soccer Penalty Shootout - Threshold Cryptography Demo
 
-A starter kit demonstrating the integration of Randamu's randomness solutions for blockchain applications. This demo showcases two different approaches to generating verifiable random numbers on-chain:
+An interactive penalty shootout game demonstrating Randamu's threshold cryptography for the **Threshold Cryptography Bootcamp**. Experience verifiable randomness through an engaging soccer game where every shot is cryptographically fair and provable.
 
-1. **Random Number Generator**: Using the Randamu Solidity library
-2. **Coin Flip**: Using the Randamu JavaScript library
+## 🎯 Main Demo: Penalty Shootout
+
+Located in `app/penalty/page.tsx`, this interactive game features:
+- **Immersive Football Field**: Full-screen game experience
+- **Verifiable Randomness**: Each penalty shot uses cryptographically secure random numbers
+- **Interactive Gameplay**: Choose goalkeeper position, click the ball to shoot
+- **Real-time Animations**: Watch the action unfold with smooth transitions
+- **Threshold Cryptography**: Powered by Randamu's secure network of trusted nodes
+
+## 🎮 Additional Demos
+
+The project also includes other randomness demonstrations (files preserved but not featured on landing page):
+1. **Random Number Generator** (`app/randomnumber/`): Using the Randamu Solidity library
+2. **Coin Flip** (`app/coinflip/`): Using the Randamu JavaScript library
 
 ## 📁 Project Structure
 
@@ -11,6 +23,9 @@ A starter kit demonstrating the integration of Randamu's randomness solutions fo
 vrf-example/
 ├── app/                            # Next.js app directory
 │   └── config.ts                   # Chain configuration, contract ABI and addresses
+│   ├── penalty/                    # ⚽ Main penalty shootout demo
+│   │   ├── page.tsx                # Interactive penalty game
+│   │   └── header.tsx              # Game header component
 │   ├── coinflip/                   # Coin flip demo
 │   │   ├── page.tsx                # Main coin flip page
 │   │   └── header.tsx              # Header component
@@ -54,21 +69,13 @@ You can get a wallet connect project ID by registering for free at https://cloud
 npm run dev
 ```
 
-## 🎯 Demo Components
+## ⚽ How to Play
 
-### 1. Random Number Generator
-Located in `app/randomnumber/page.tsx`, this demo uses the Randamu Solidity library to generate verifiable random numbers on-chain. Features:
-- Integration with custom Smart Contract, example in `lib/RandomNumberGenerator.sol` 
-- Transaction-based randomness generation
-- Animated number display
-- Mobile-responsive layout
-
-### 2. Coin Flip
-Located in `app/coinflip/page.tsx`, this demo uses the Randamu JavaScript library for randomness. Features:
-- Client-side randomness generation
-- Verifiable results
-- Interactive UI
-- Real-time updates
+1. **Connect Wallet**: Use the connect button to link your Web3 wallet
+2. **Choose Strategy**: Select where the goalkeeper should dive (Left/Center/Right)
+3. **Take the Shot**: Click the soccer ball to trigger a verifiable random penalty
+4. **Watch the Magic**: See threshold cryptography determine the shot direction
+5. **Celebrate or Commiserate**: Goal or save - every result is cryptographically fair!
 
 ## Configuration
 
